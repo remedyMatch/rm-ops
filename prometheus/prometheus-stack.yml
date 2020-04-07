@@ -1,0 +1,28 @@
+version: '3.2'
+
+services:
+  prometheus:
+    image: prom/prometheus
+    restart: always
+    ports:
+      - 9090:9090
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--web.external-url=http://localhost:9090/prometheus/"
+    volumes:
+      - prometheus_volume:/etc/prometheus
+    networks:
+      - prometheus_network
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints: [node.role == manager]
+
+networks:
+  prometheus_network:
+    driver: overlay
+    attachable: true
+
+volumes:
+  prometheus_volume: {}

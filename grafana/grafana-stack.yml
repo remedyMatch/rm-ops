@@ -1,0 +1,45 @@
+version: '3.2'
+
+services:
+  grafana:
+    image: grafana/grafana
+    restart: always
+    ports:
+      - 3210:3000
+    environment:
+      PATH: /usr/share/grafana/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+      GF_PATHS_CONFIG: /etc/grafana/grafana.ini
+      GF_PATHS_DATA: /var/lib/grafana
+      GF_PATHS_HOME: /usr/share/grafana
+      GF_PATHS_LOGS: /var/log/grafana
+      GF_PATHS_PLUGINS: /var/lib/grafana/plugins
+      GF_PATHS_PROVISIONING: /etc/grafana/provisioning
+      GF_SERVER_ROOT_URL: https://monitoring.remedymatch.io/grafana
+      GF_SERVER_SERVE_FROM_SUB_PATH: "true"
+      GF_AUTH_GITHUB_ENABLED: "true"
+      GF_AUTH_GITHUB_ALLOW_SIGN_UP: "true"
+      GF_AUTH_GITHUB_CLIENT_ID: 43c0df506ec5fff88c1b
+      GF_AUTH_GITHUB_CLIENT_SECRET: e359b170f67c071086a1659bdb1d667cb9916316
+      GF_AUTH_GITHUB_SCOPES: user:emailread:org
+      GF_AUTH_GITHUB_AUTH_URL: https://github.com/login/oauth/authorize
+      GF_AUTH_GITHUB_TOKEN_URL: https://github.com/login/oauth/access_token
+      GF_AUTH_GITHUB_API_URL: https://api.github.com/user
+      GF_AUTH_BASIC_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: Pa55w0rd
+    volumes:
+      - grafana_volume:/var/lib/grafana
+    networks:
+      - grafana_network
+    deploy:
+      mode: replicated
+      replicas: 1
+      placement:
+        constraints: [node.role == manager]
+
+networks:
+  grafana_network:
+    driver: overlay
+    attachable: true
+
+volumes:
+  grafana_volume: {}
